@@ -1,4 +1,5 @@
 ﻿using MSC.BussinessLogics;
+using MSC.Extensions;
 using MSC.Models;
 using System;
 using System.Collections.Generic;
@@ -58,31 +59,16 @@ namespace MSC
                 RichTextBoxDetail.Invoke(new Action(() =>
                 {
 
-                    var result = _projectRequestBLL.GetHistories(SelectedData.ID, false);
+                    var result = _projectRequestBLL.GetHistories(SelectedData.ID, true);
                     if (result.Count == 1)
                     {
                         RichTextBoxDetail.Text = "The data has not been modified since it was created.";
                     }
                     else
                     {
-                        Dictionary<string, string> modifiedData = new Dictionary<string, string>();
-                        if (result[0].ProjectName != result[1].ProjectName)
-                            modifiedData.Add("Project Name", $"From `{result[1].ProjectName}` to `{result[0].ProjectName}`");
-                        if (result[0].Description != result[1].Description)
-                            modifiedData.Add("Description", $"From `{result[1].Description}` to `{result[0].Description}`");
-                        if (result[0].ClientName != result[1].ClientName)
-                            modifiedData.Add("Client Name", $"From `{result[1].ClientName}` to `{result[0].ClientName}`");
-                        if (result[0].StartDate != result[1].StartDate)
-                            modifiedData.Add("Start Date", $"From `{result[1].StartDate}` to `{result[0].StartDate}`");
-                        if (result[0].ExpectedEndDate != result[1].ExpectedEndDate)
-                            modifiedData.Add("Expected End Date", $"From `{result[1].ExpectedEndDate}` to `{result[0].ExpectedEndDate}`");
-                        StringBuilder sb = new StringBuilder();
-                        sb.AppendLine($"User `{result[0].ModifiedBy}` has modified the data, below is the affected columns: ");
-                        foreach(var item in modifiedData)
-                        {
-                            sb.AppendLine($"\t[{item.Key}], {item.Value}");
-                        }
-                        RichTextBoxDetail.Text = sb.ToString();
+                        List<string> list = ColumnChangeTracker.GetChangedColumns(result.ToArray());
+                        string textResult = list.Aggregate((current, next) => current + "\n" + next);
+                        RichTextBoxDetail.Text = textResult;
                     }
                 }));
             }

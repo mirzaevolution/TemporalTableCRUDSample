@@ -65,6 +65,7 @@
     <Compile Include="BussinessLogics\ProjectRequestsBLL.cs" />
     <Compile Include="BussinessLogics\UsersBLL.cs" />
     <Compile Include="CoreGlobal.cs" />
+    <Compile Include="Extensions\ColumnChangeTracker.cs" />
     <Compile Include="FormDetail.cs">
       <SubType>Form</SubType>
     </Compile>
