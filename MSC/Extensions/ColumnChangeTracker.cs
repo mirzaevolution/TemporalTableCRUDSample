@@ -13,17 +13,22 @@ namespace MSC.Extensions
 
             int maxIndex = array.Length - 1;
             List<string> columns = new List<string>();
+            
             for (int index = 0; index < maxIndex; index++)
             {
                 var current = array.GetValue(index);
                 var prev = array.GetValue(index + 1);
-                PropertyInfo[] prevProperties = prev.GetType().GetProperties().Where(x=> !x.Name.Equals("StartTime") && !x.Name.Equals("EndTime")).ToArray();
+                PropertyInfo[] prevProperties = prev.GetType().GetProperties()
+                    .Where(x=> 
+                        !x.Name.Equals("StartTime") && 
+                        !x.Name.Equals("EndTime"))
+                    .ToArray();
                 PropertyInfo[] currProperties = current.GetType().GetProperties().Where(x => !x.Name.Equals("StartTime") && !x.Name.Equals("EndTime")).ToArray();
                 int maxPropIndex = prevProperties.Length;
-                var user = prevProperties.FirstOrDefault(x => x.Name.Equals("ModifiedBy", StringComparison.InvariantCultureIgnoreCase));
+                var user = currProperties.FirstOrDefault(x => x.Name.Equals("ModifiedBy", StringComparison.InvariantCultureIgnoreCase));
                 if (user != null)
                 {
-                    columns.Add($"`{user.GetValue(prev)}` has changed: ");
+                    columns.Add($"`{user.GetValue(current)}` has changed: ");
                 }
                 else
                 {
@@ -39,7 +44,18 @@ namespace MSC.Extensions
                     }
 
                 }
+
                 columns.Add("\n");
+                if (index+1 == maxIndex)
+                {
+                    var creatorObj = prevProperties.FirstOrDefault(x => x.Name.Equals("CreatedBy", StringComparison.InvariantCultureIgnoreCase));
+                    var createdDateObj = prevProperties.FirstOrDefault(x => x.Name.Equals("CreatedDate", StringComparison.InvariantCultureIgnoreCase));
+                    if(creatorObj!=null && createdDateObj != null)
+                    {
+                        columns.Add($"`{(creatorObj.GetValue(prev)==null?"Unknown": (creatorObj.GetValue(prev).ToString()))}` created this data at `{(createdDateObj.GetValue(prev)==null?"Unknown":createdDateObj.GetValue(prev).ToString())}`");
+                    }
+                }
+
             }
             return columns;
         }

@@ -102,6 +102,35 @@ namespace MSC.BussinessLogics
                 return false;
             }
         }
+        public bool Delete(Guid id)
+        {
+            try
+            {
+                using (SqlConnection sqlConn = new SqlConnection(GlobalBLL.GetConnectionString()))
+                {
+                    string query = "vx.ProjectRequest_Delete";
+                    DynamicParameters parameters = new DynamicParameters();
+                    parameters.Add("ID", id);
+                    parameters.Add("status", string.Empty, direction: System.Data.ParameterDirection.Output);
+                    var result = sqlConn.Execute(query, parameters, commandType: System.Data.CommandType.StoredProcedure);
+                    string status = parameters.Get<string>("status");
+                    if (status.Equals("success", StringComparison.InvariantCultureIgnoreCase))
+                        return true;
+                    else
+                    {
+                        //Display error messages
+                        Console.WriteLine(status);
+                        return false;
+
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return false;
+            }
+        }
         public List<ProjectRequests> GetHistories(Guid id,bool showAll=true)
         {
             try
