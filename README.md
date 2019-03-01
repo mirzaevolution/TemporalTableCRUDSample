@@ -1,4 +1,4 @@
-# TemporalTableCRUDSample
+# Temporal Table CRUD Sample Windows Forms
 This is a sample project for CRUD SQL Server Temporal Table using Dapper and Winforms
 Default Account:
 
